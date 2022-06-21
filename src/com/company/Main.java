@@ -8,10 +8,11 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        Map<String, Double> purchases = getPurchases();
-        printPurchases(purchases);
-        printTotalCost(purchases);
+        Menu menu = new Menu();
+        menu.startMenu();
     }
+
+
 
     public static void printPurchases(Map<String, Double> purchases) {
         for (var purchase : purchases.entrySet()) {
