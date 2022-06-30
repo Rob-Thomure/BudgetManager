@@ -4,7 +4,8 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Menu {
-    private final Budget budget = new Budget();
+    private final Purchases purchases = new Purchases();
+    private final Balance balance = new Balance();
 
     public void startMenu() {
         boolean exit = false;
@@ -26,7 +27,11 @@ public class Menu {
                     addPurchase();
                     break;
                 case 3:
-                    showPurchases();
+                    if (purchases.isEmpty()) {
+                        System.out.println("The purchase list is empty!\n");
+                    } else {
+                        showPurchases();
+                    }
                     break;
                 case 4:
                     showBalance();
@@ -47,37 +52,90 @@ public class Menu {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter income:");
         double income = scanner.nextDouble();
-        budget.addIncome(income);
+        balance.addIncome(income);
         System.out.println("Income was added!\n");
     }
 
     public void addPurchase() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter purchase name:");
-        String name = scanner.nextLine();
-        System.out.println("Enter its price:");
-        double price = scanner.nextDouble();
-        budget.addPurchase(name, price);
-        System.out.println("Purchase was added!\n");
+        boolean backToMainMenu = false;
+        while (!backToMainMenu) {
+            Scanner scanner = new Scanner(System.in);
+            printPurchaseTypes();
+            int type = scanner.nextInt();
+            if (type > 5) {
+                System.out.println("Invalid input! please input 1-5");
+                continue;
+            } else if (type == 5) {
+                System.out.println();
+                backToMainMenu = true;
+                continue;
+            }
+            PurchaseType purchaseType = PurchaseType.getPurchaseType(type);
+            System.out.println();
+            scanner.nextLine();
+            System.out.println("Enter purchase name:");
+            String name = scanner.nextLine();
+            System.out.println("Enter its price:");
+            double price = scanner.nextDouble();
+            purchases.addPurchase(name, price, purchaseType);
+            balance.deductBalance(price);
+            System.out.println("Purchase was added!\n");
+        }
+    }
+
+    public void printPurchaseTypes() {
+        System.out.println("Choose the type of purchase\n" +
+                "1) Food\n" +
+                "2) Clothes\n" +
+                "3) Entertainment\n" +
+                "4) Other\n" +
+                "5) Back");
+    }
+
+    public void printListTypes() {
+        System.out.println("Choose the type of purchases\n" +
+                "1) Food\n" +
+                "2) Clothes\n" +
+                "3) Entertainment\n" +
+                "4) Other\n" +
+                "5) All\n" +
+                "6) Back");
     }
 
     public void showPurchases() {
-        Map<String, Double> purchases = budget.getPurchases();
-        if (purchases.isEmpty()) {
-            System.out.println("The purchase list is empty\n");
-        } else {
-            double total = 0.0;
-            for (var entry : purchases.entrySet()) {
-                System.out.printf("%s $%.2f%n", entry.getKey(), entry.getValue());
-                total += entry.getValue();
+        boolean backToMainMenu = false;
+        while (!backToMainMenu) {
+            printListTypes();
+            Scanner scanner = new Scanner(System.in);
+            int type = scanner.nextInt();
+            if (type > 6) {
+                System.out.println("Invalid input! please input 1-6");
+                continue;
+            } else if (type == 6) {
+                System.out.println();
+                backToMainMenu = true;
+                continue;
             }
-            System.out.printf("Total sum: %.2f%n%n", total);
+            PurchaseType purchaseType = PurchaseType.getPurchaseType(type);
+            Map<String, Double> purchaseMap = purchases.getPurchaseMap(purchaseType);
+            System.out.println();
+            assert purchaseType != null;
+            System.out.printf("%s:%n", purchaseType.getName());
+
+            if (purchaseMap.isEmpty()) {
+                System.out.println("The purchase list is empty!\n");
+            } else {
+                double total = 0.0;
+                for (var entry : purchaseMap.entrySet()) {
+                    System.out.printf("%s $%.2f%n", entry.getKey(), entry.getValue());
+                    total += entry.getValue();
+                }
+                System.out.printf("Total sum: %.2f%n%n", total);
+            }
         }
     }
 
     public void showBalance() {
-        System.out.printf("Balance: $%.2f%n%n", budget.getBalance());
+        System.out.printf("Balance: $%.2f%n%n", balance.getAccountBalance());
     }
-
-
 }
