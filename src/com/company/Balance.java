@@ -1,10 +1,18 @@
 package com.company;
 
 public class Balance {
+    private static Balance instance = null;
     private double accountBalance;
 
-    public Balance() {
+    private Balance() {
         this.accountBalance = 0.0;
+    }
+
+    public static Balance getInstance() {
+        if (instance ==null) {
+            instance = new Balance();
+        }
+        return instance;
     }
 
     public void addIncome(double income) {

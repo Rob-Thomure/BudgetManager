@@ -4,10 +4,18 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Purchases {
+    private static Purchases instance = null;
     Map<String, Purchase> purchaseMap;
 
-    Purchases() {
+    private Purchases() {
         this.purchaseMap = new LinkedHashMap<>();
+    }
+
+    public static Purchases getInstance() {
+        if (instance == null) {
+            instance = new Purchases();
+        }
+        return instance;
     }
 
     public void addPurchase(String name, double price, PurchaseType type) {
@@ -23,6 +31,10 @@ public class Purchases {
             }
         }
         return purchases;
+    }
+
+    public Map<String, Purchase> getPurchaseMap() {
+        return purchaseMap;
     }
 
     public boolean isEmpty() {

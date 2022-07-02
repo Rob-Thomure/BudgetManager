@@ -4,8 +4,9 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Menu {
-    private final Purchases purchases = new Purchases();
-    private final Balance balance = new Balance();
+    private final Purchases purchases = Purchases.getInstance();
+    private final Balance balance = Balance.getInstance();
+    private final Data data = new Data();
 
     public void startMenu() {
         boolean exit = false;
@@ -15,6 +16,8 @@ public class Menu {
                                "2) Add purchase\n" +
                                "3) Show list of purchases\n" +
                                "4) Balance\n" +
+                               "5) Save\n" +
+                               "6) Load\n" +
                                "0) Exit");
             Scanner scanner = new Scanner(System.in);
             int action = scanner.nextInt();
@@ -35,6 +38,14 @@ public class Menu {
                     break;
                 case 4:
                     showBalance();
+                    break;
+                case 5:
+                    data.save();
+                    System.out.println("Purchase were saved!\n");
+                    break;
+                case 6:
+                    data.load();
+                    System.out.println("Purchases were loaded!\n");
                     break;
                 case 0:
                     exit = true;
@@ -130,7 +141,7 @@ public class Menu {
                     System.out.printf("%s $%.2f%n", entry.getKey(), entry.getValue());
                     total += entry.getValue();
                 }
-                System.out.printf("Total sum: %.2f%n%n", total);
+                System.out.printf("Total sum: $%.2f%n%n", total);
             }
         }
     }
