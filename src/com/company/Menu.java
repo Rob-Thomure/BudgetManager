@@ -1,5 +1,6 @@
 package com.company;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -18,6 +19,7 @@ public class Menu {
                                "4) Balance\n" +
                                "5) Save\n" +
                                "6) Load\n" +
+                               "7) Analyze (Sort)\n" +
                                "0) Exit");
             Scanner scanner = new Scanner(System.in);
             int action = scanner.nextInt();
@@ -47,6 +49,10 @@ public class Menu {
                     data.load();
                     System.out.println("Purchases were loaded!\n");
                     break;
+                case 7:
+                    showAnalysis();
+
+                    break;
                 case 0:
                     exit = true;
                     System.out.println("Bye!");
@@ -54,6 +60,80 @@ public class Menu {
                 default:
                     System.out.println("Invalid input");
                     break;
+            }
+        }
+
+    }
+
+    public void showAnalysis() {
+        boolean backToMainMenu = false;
+        while (!backToMainMenu) {
+            printAnalysisTypes();
+            Scanner scanner = new Scanner(System.in);
+            int choice = scanner.nextInt();
+            switch (choice) {
+                case 1:
+                    Analysis analysisAll = new AnalysisAll();
+                    printAnalysisResult(analysisAll, "All");
+                    break;
+                case 2:
+                    Analysis analysisByTpe = new AnalysisByType();
+                    printAnalysisResult(analysisByTpe, "Types");
+                    break;
+                case 3:
+                    printPurchaseTypes();
+                    chooseAnalysisTypePurchase();
+                    break;
+                case 4:
+                    backToMainMenu = true;
+                    System.out.println();
+                    break;
+            }
+        }
+    }
+
+    public void chooseAnalysisTypePurchase() {
+        Scanner scanner = new Scanner(System.in);
+        int type = scanner.nextInt();
+        Analysis analysisCertainType;
+        switch (type) {
+            case 1:
+                analysisCertainType = new AnalysisCertainType("Food");
+                printAnalysisResult(analysisCertainType, "Food");
+                break;
+            case 2:
+                analysisCertainType = new AnalysisCertainType("Clothes");
+                printAnalysisResult(analysisCertainType, "Clothes");
+                break;
+            case 3:
+                analysisCertainType = new AnalysisCertainType("Entertainment");
+                printAnalysisResult(analysisCertainType, "Entertainment");
+                break;
+            case 4:
+                analysisCertainType = new AnalysisCertainType("Other");
+                printAnalysisResult(analysisCertainType, "Other");
+                break;
+            default:
+                System.out.println("Invalid choice");
+                break;
+        }
+    }
+
+    //TODO test this method , moved total inside else, added parameter type
+    public void printAnalysisResult(Analysis analysis, String type) {
+        List<Purchase> purchaseList = analysis.getSortedList();
+        if (purchaseList.isEmpty()) {
+            System.out.println("\nThe purchase list is empty!\n");
+        } else {
+            System.out.printf("%n%s:%n", type);
+            for (Purchase purchase : purchaseList) {
+                System.out.println(purchase);
+            }
+            double total = analysis.getTotalCost(purchaseList);
+            if (total > 0) {
+                System.out.printf("Total sum: $%.2f%n%n", total);
+            } else {
+                System.out.println("Total sum: $0\n");
             }
         }
 
@@ -94,8 +174,16 @@ public class Menu {
         }
     }
 
+    public void printAnalysisTypes() {
+        System.out.println("How do you want to sort?\n" +
+                "1) Sort all purchases\n" +
+                "2) Sort by type\n" +
+                "3) Sort certain type\n" +
+                "4) Back");
+    }
+
     public void printPurchaseTypes() {
-        System.out.println("Choose the type of purchase\n" +
+        System.out.println("\nChoose the type of purchase\n" +
                 "1) Food\n" +
                 "2) Clothes\n" +
                 "3) Entertainment\n" +
@@ -112,6 +200,8 @@ public class Menu {
                 "5) All\n" +
                 "6) Back");
     }
+
+
 
     public void showPurchases() {
         boolean backToMainMenu = false;
